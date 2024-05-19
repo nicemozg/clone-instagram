@@ -1,0 +1,344 @@
+@using Instagramm.Enum
+@model Instagramm.ViewModels.UserViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5 d-block" id="mainPage">
+    <div class="row">
+        <div class="col-md-3">
+            <img src="/avatars/@Model.AvatarFileName" alt="@Model.AvatarFileName"
+                 class="img-fluid rounded-circle avatar-image">
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+            @{
+                @if (Model.Name != null)
+                {
+                    <div>
+                        <h2>&#64;@Model.UserName</h2>
+                        @if (Model.Gender == Gender.Man)
+                        {
+                            <h4>
+                                @Model.Name <i class="fas fa-male"></i>
+                            </h4>
+                        }
+                        else if (Model.Gender == Gender.Woman)
+                        {
+                            <h4>
+                                @Model.Name <i class="fas fa-female"></i>
+                            </h4>
+                        }
+                        else if (Model.Gender == Gender.Uncertainty)
+                        {
+                            <h4>
+                                @Model.Name <i class="fas fa-male"></i> <i class="fas fa-female"></i>
+                            </h4>
+                        }
+                        else
+                        {
+                            <h4>@Model.Name</h4>
+                        }
+                        <h5>@Model.Description</h5>
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        @if (Model.Gender == Gender.Man)
+                        {
+                            <h2>&#64;@Model.UserName <i class="fas fa-male"></i></h2>
+                        }
+                        else if (Model.Gender == Gender.Woman)
+                        {
+                            <h2>&#64;@Model.UserName <i class="fas fa-female"></i></h2>
+                        }
+                        else if (Model.Gender == Gender.Uncertainty)
+                        {
+                            <h2>&#64;@Model.UserName <i class="fas fa-male"></i> <i class="fas fa-female"></i></h2>
+                        }
+                        else
+                        {
+                            <h2>&#64;@Model.UserName</h2>
+                        }
+                        <h4>@Model.Description</h4>
+                    </div>
+                }
+
+            }
+
+            <ul class="list-unstyled ms-5">
+                <li>
+                    <strong>Публикации:</strong> @ViewBag.Posts.Count
+                </li>
+                <li>
+                    <strong>Подписчики:</strong> @ViewBag.Followers.Count
+                </li>
+                <li>
+                    <strong>Подписки:</strong> @ViewBag.Followeds.Count
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-3 d-flex justify-content-center align-items-center">
+            <div class="btn-group">
+                <a asp-action="EditUserInfo" asp-route-id="@Model.Id" class="btn btn-light btn-add-post">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a asp-action="DeleteUserPage" asp-route-id="@Model.Id" class="btn btn-light btn-add-post">
+                    <i class="fas fa-trash"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-3">
+                <a class="btn btn-light btn-add-post m-auto" asp-action="AddPost" asp-route-id="@Model.Id">
+                    <i class="fas fa-plus"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mt-4">
+        @foreach (var post in ViewBag.Posts)
+        {
+            <div class="col-md-4 mb-4 d-block" id="post-@post.Id">
+                <div class="card card-post">
+                    <a asp-action="AddComment" asp-route-id="@post.Id" id="addComment-@post.Id">
+                        <img src="/posts/@post.PostFileName" alt="@post.PostFileName" class="card-img-top card-img-post">
+                    </a>
+                    <div class="card-body">
+
+
+                        <button onclick="like(@post.Id)" id="like-@post.Id" class="btn btn-outline-danger">
+                            <i class="fas fa-heart"></i> @post.LikesCount
+                            <span class="badge badge-primary"></span>
+                        </button>
+
+                        <a asp-action="AddComment" asp-route-id="@post.Id" class="btn btn-outline-secondary" id="addComment-@post.Id">
+                            <i class="fas fa-comment"></i> @post.CommentsCount
+                            <span class="badge badge-primary"></span>
+                        </a>
+
+                        <button onclick="EditPostStart(@post.Id)" class="btn btn-outline-secondary" id="edit-@post.Id">
+                            <i class="fas fa-edit"></i>
+                        </button>
+
+                        <button onclick="DeletePost(@post.Id)" class="btn btn-outline-secondary" id="delete @post.Id">
+                            <i class="fas fa-trash"></i>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="container mt-4 d-none" id="editPost"></div>
+<div class="container mt-4 d-none" id="deletPost"></div>
+
+@section Scripts
+{
+    <script>
+    
+    function DeletePost(postId) {
+        
+                $.ajax({
+                    url: '@Url.Action("DeletePost", "Instagram")',
+                    type: 'GET',
+                    data: {id: postId},
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log(data)
+                    DeletePostConfirm(data)
+                    },
+                    error: function (data) {
+                        if (data == null) {
+                            console.log('Что-то пошло не так');
+                        }
+                    },
+                });
+            }
+    
+    function EditPostStart(postId) {
+            $.ajax({
+                url: '@Url.Action("EditPost", "Instagram")',
+                type: 'GET',
+                data: {id: postId},
+                dataType: 'json',
+                success: function (data) {
+                    EditPostResponse(data)
+                },
+                error: function (data) {
+                    if (data == null) {
+                        console.log('Что-то пошло не так');
+                    }
+                },
+            });
+        }
+    
+    function like(postId){
+            $.ajax({
+            url: '@Url.Action("Like", "Instagram")',
+            type: 'POST',
+            data: {postId: postId},
+            dataType: 'json',
+            success: function (data) {
+            likeButton(data);
+            },
+            error: function (data) {
+            if (data == null) {
+            console.log('Что-то пошло не так');
+                 }
+               }
+            })
+        }
+    
+    function likeButton(data) {
+            let likeButton = $(`#like-${data.postId}`)
+            likeButton.html(`<i class="fas fa-heart"></i> ${data.likesCount} <span class="badge badge-primary"></span>`)
+            }
+            
+    function EditPostResponse(data){
+        let editPost = $('#editPost')
+        $("#editPost").removeClass("d-none").addClass("d-block");
+        $("#mainPage").removeClass("d-block").addClass("d-none");
+         const postDescription = data.descriptionForPost
+        
+         
+        editPost.html(`
+         <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="card" style="max-width: 640px;">
+                        <img src="/posts/${data.postFileName}" alt="Фото поста" class="card-img-top" style="width: 100%;"/>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>&#64;${data.userName}</strong>
+                            </p>
+                            <p class="card-text">${data.descriptionForPost}</p>
+                            <div class="row">
+        
+                                        <div class="col">
+                                            <p class="text-danger">
+                                                <i class="fas fa-heart"></i> ${data.likesCount} Like
+                                            </p>
+                                        </div>
+                                  
+                                        <div class="col">
+                                            <p>
+                                                <i class="fas fa-comment"></i> ${data.commentsCount} Comment
+                                            </p>
+                                        </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-6">
+                    <p>
+                        <strong>Введите описание для поста</strong>
+                    </p>
+                    
+                        <div class="form-group">
+                            <textarea
+                            class="form-control" rows="4" 
+                            id="postDescription"
+                            placeholder="Введите описание для поста">${postDescription}</textarea>
+                        </div>
+                        <button onclick="SavePost(${data.id})" class="btn btn-outline-success mt-2" id="postInfoForSave">
+                            <i class="fas fa-save"></i>
+                        </button>
+                </div>
+            </div>
+        `)
+    }       
+    
+    
+    function SavePost(postId){
+        
+        $("#editPost").removeClass("d-block").addClass("d-none");
+        $("#mainPage").removeClass("d-none").addClass("d-block");
+         const postDescription = $("#postDescription").val();
+        $.ajax({
+        url: '@Url.Action("EditPost", "Instagram")',
+        type: 'POST',
+        data: {postId: postId, postDescription: postDescription},
+        dataType: 'json',
+        success: function (data) {
+
+        },
+        error: function (data) {
+        if (data == null) {
+        console.log('Что-то пошло не так');
+            }
+           }
+        })
+    }
+    
+    function DeletePostConfirm(data){
+            let deletPost = $('#deletPost')
+            $("#deletPost").removeClass("d-none").addClass("d-block");
+            $("#mainPage").removeClass("d-block").addClass("d-none");
+            
+            deletPost.html(`
+            <div class="container mt-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card" style="max-width: 640px;">
+                            <img src="/posts/${data.postFileName}" alt="Фото поста" class="card-img-top" style="width: 100%;"/>
+                            <div class="card-body">
+                                <p class="card-text">${data.descriptionForPost}</p>
+                                <div class="row">
+                                            <div class="col">
+                                                <p class="text-danger">
+                                                    <i class="fas fa-heart"></i> ${data.likesCount} Likes
+                                                </p>
+                                            </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h2>Подтверждение удаления</h2>
+                            <p>Вы действительно хотите удалить пост</p>
+                            <button onclick="DeletePostConfirmPost(${data.postId})" class="btn btn-danger">Да</button>
+                            <button onclick="MyPage()" class="btn btn-success">Нет</button>
+                    </div>
+                </div>
+            </div>
+            `)
+        }
+        
+        function DeletePostConfirmPost(postId){
+                
+                $.ajax({
+                url: '@Url.Action("Delete", "Instagram")',
+                type: 'POST',
+                data: {id: postId},
+                dataType: 'json',
+                success: function (data) {
+                console.log("*******************")
+                console.log(data)
+               $(`#post-${data.id}`).remove();
+               $("#deletPost").removeClass("d-block").addClass("d-none");
+               $("#mainPage").removeClass("d-none").addClass("d-block");
+                },
+                error: function (data) {
+                if (data == null) {
+                console.log('Что-то пошло не так');
+                    }
+                   }
+                })
+            }
+            
+        function MyPage(){
+         $("#deletPost").removeClass("d-block").addClass("d-none");
+         $("#mainPage").removeClass("d-none").addClass("d-block");
+        }
+        
+    </script>
+}

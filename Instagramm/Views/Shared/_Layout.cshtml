@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - Instagram</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/Instagramm.styles.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+<body>
+<header>
+    
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container-fluid ms-5">
+                 <a class="navbar-brand ms-5" asp-area="" asp-controller="Instagram" asp-action="Index">
+                                <img src="/posts/17eaf80a-dfe9-485c-9143-6e2be2f24d5c_Instagram-logo.jpg" class="ava-insta"/>
+                            </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <ul class="navbar-nav flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Регистрация</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Вход</a>
+                            </li>
+                        </ul>
+                    }
+            </div>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-end">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <ul class="navbar-nav flex-grow-1 justify-content-end me-5">
+                        <li class="nav-item">
+                            <a class="btn btn-outline-secondary me-2" asp-area="" asp-controller="Instagram" asp-action="MyFollowedUsers">
+                                <i class="fas fa-home"></i> <span class="badge badge-primary"></span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Instagram" asp-action="MyPage" class="btn btn-outline-secondary me-2">
+                                @User.Identity.Name <i class="fas fa-user"></i> <span class="badge badge-primary"></span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item me-5">
+                            <form method="post" asp-action="Logout" asp-controller="Account">
+                                <button class="btn btn-outline-secondary" type="submit">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span class="badge badge-primary"></span>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                }
+            </div>
+
+        </div>
+    </nav>
+    
+</header>
+<div class="container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2023 - Instagram - <a asp-area="" asp-controller="Instagram" asp-action="Index">Privacy</a>
+    </div>
+</footer>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

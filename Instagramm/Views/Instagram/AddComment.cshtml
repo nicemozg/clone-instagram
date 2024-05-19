@@ -1,0 +1,169 @@
+@using Microsoft.EntityFrameworkCore
+@using System.Xml
+@model Instagramm.ViewModels.PostViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card" style="max-width: 640px;">
+                <a asp-action="UserPage" asp-route-id="@Model.UserId">
+                    <img src="/posts/@Model.PostFileName" alt="@Model.PostFileName" class="card-img-top" style="width: 100%;"/>
+                </a>
+                <div class="card-body">
+                    <a asp-action="UserPage" asp-route-id="@Model.UserId" class="card-text">
+                        <img src="/avatars/@Model.AvatarFileName" alt="@Model.AvatarFileName"
+                             class="rounded-circle mr-3 mb-3" style="width: 50px; height: 50px;">
+                        <strong class="ms-3">&#64;@Model.UserName</strong>
+                    </a>
+                    <p class="card-text">@Model.DescriptionForPost</p>
+                    <div class="row">
+                        @{
+                            if (Model.LikesCount == 1 && Model.CommentsCount == 1)
+                            {
+                                <button onclick="like(@Model.Id)" id="@Model.Id" class="btn btn-outline-danger">
+                                    <i class="fas fa-heart"></i> @Model.LikesCount
+                                    <span class="badge badge-primary"></span>
+                                </button>
+
+                                <p class="d-inline ms-3">
+                                    <i class="fas fa-comment"></i> @Model.CommentsCount Comment
+                                </p>
+
+                                <p class="d-inline ms-3">
+                                    <i class="fas fa-check-circle btn btn-success"></i> @Model.Creation
+                                </p>
+
+                                
+                               
+                            }
+                            else if (Model.LikesCount != 1 && Model.CommentsCount == 1)
+                            {
+                                <button onclick="like(@Model.Id)" id="@Model.Id" class="btn btn-outline-danger">
+                                    <i class="fas fa-heart"></i> @Model.LikesCount
+                                    <span class="badge badge-primary"></span>
+                                </button>
+
+                                <p class="d-inline ms-3">
+                                    <i class="fas fa-comment"></i> @Model.CommentsCount Comment
+                                </p>
+
+                                <p class="d-inline ms-3">
+                                    <i class="fas fa-check-circle btn btn-success"></i> @Model.Creation
+                                </p>
+                            }
+                            else if (Model.LikesCount == 1 && Model.CommentsCount != 1)
+                            {
+                                <button onclick="like(@Model.Id)" id="@Model.Id" class="btn btn-outline-danger">
+                                    <i class="fas fa-heart"></i> @Model.LikesCount
+                                    <span class="badge badge-primary"></span>
+                                </button>
+
+                                <p class="d-inline ms-3">
+                                    <i class="fas fa-comment"></i> @Model.CommentsCount Comments
+                                </p>
+                                <p class="d-inline ms-3">
+                                    <i class="fas fa-check-circle btn btn-success"></i> @Model.Creation
+                                </p>
+                            }
+                            else
+                            {
+                                <button onclick="like(@Model.Id)" id="@Model.Id" class="btn btn-outline-danger">
+                                    <i class="fas fa-heart"></i> @Model.LikesCount
+                                    <span class="badge badge-primary"></span>
+                                </button>
+                                <p class="d-inline ms-3">
+                                    <i class="fas fa-comment"></i> @Model.CommentsCount Comments
+                                </p>
+                                <p class="d-inline ms-3">
+                                    <i class="fas fa-check-circle btn btn-success"></i> @Model.Creation
+                                </p>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <form method="post" asp-action="AddComment" asp-controller="Instagram">
+                <input type="hidden" asp-for="@Model.Id"/>
+                <div class="form-group">
+                    <textarea asp-for="DescriptionForComment"
+                    class="form-control" rows="4" 
+                    placeholder="Введите ваш комментарий"></textarea>
+                </div>
+                <button class="btn btn-primary mt-2">Отправить</button>
+            </form>
+        </div>
+    </div>
+
+
+    @foreach (var comment in ViewBag.Post)
+    {
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-6">
+                <div class="media">
+                    <a asp-action="UserPage" asp-route-id="@comment.UserId">
+                        <img src="/avatars/@comment.AvatarFileName" alt="@comment.AvatarFileName"
+                             class="rounded-circle mr-3" style="width: 50px; height: 50px;">
+                    </a>
+
+
+                    <div class="media-body">
+                        <h5 class="mt-0">
+                            @comment.UserName -
+                            <span class="badge btn-light">@comment.Creation</span>
+                            @{
+                                foreach (var role in ViewBag.Roles)
+                                {
+                                    if (comment.UserId == comment.CurrentUserId || role == "admin")
+                                    {
+                                        <a asp-action="DeleteComment" asp-route-id="@comment.Id" class="btn btn-close"></a>
+                                    }
+                                }
+                            }
+                        </h5>
+                        @comment.Description
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts
+{
+    <script>
+    
+    function like(postId){
+        $.ajax({
+        url: '@Url.Action("Like", "Instagram")',
+        type: 'POST',
+        data: {postId: postId},
+        dataType: 'json',
+        success: function (data) {
+        likeButton(data);
+        },
+        error: function (data) {
+        if (data == null) {
+        console.log('Что-то пошло не так');
+             }
+           }
+        })
+    }
+    
+    function likeButton(data) {
+            console.log(data)
+            let likeButton = $(`#${data.postId}`)
+            likeButton.html(`<i class="fas fa-heart"></i> ${data.likesCount} <span class="badge badge-primary"></span>`)
+            }
+     
+    </script>
+}

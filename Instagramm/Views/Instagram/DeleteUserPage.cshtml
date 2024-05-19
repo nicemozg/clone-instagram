@@ -1,0 +1,31 @@
+@model Instagramm.ViewModels.UserViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card" style="max-width: 640px;">
+                <img src="/avatars/@Model.AvatarFileName" alt="Фото поста" class="card-img-top" style="width: 100%;"/>
+                <div class="card-body">
+                    <p class="card-text"><strong>&#64;@Model.UserName</strong></p>
+                    <p class="card-text">@Model.Name</p>
+                    <p class="card-text">@Model.Description</p>
+
+                </div>
+            </div>
+            <h2>Подтверждение удаления</h2>
+
+            <form method="post" asp-action="DeleteUserPage" asp-controller="Instagram" asp-route-id="@Model.Id">
+                <p>Вы действительно хотите удалить аккаунт <strong>&#64;@Model.UserName</strong></p>
+                <input type="submit" value="Да" class="btn btn-danger">
+                <a asp-action="MyPage" asp-controller="Instagram" class="btn btn-success">Нет</a>
+            </form>
+        </div>
+
+    </div>
+</div>

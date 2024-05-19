@@ -1,0 +1,28 @@
+@model IEnumerable<Instagramm.ViewModels.UserViewModel>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<form asp-action="FindUserFromFollowed" asp-controller="Instagram" method="post">
+    <div class="input-container">
+        <input type="text" id="inputField" name="userInfo" class="form-control" placeholder="Введите текст">
+        <button type="submit" class="btn">Поиск</button>
+    </div>
+</form>
+
+@{
+    foreach (var user in Model)
+    {
+        <ul>
+            <li>
+                <a asp-action="UserPage" asp-route-id="@user.Id">
+                    <img src="/avatars/@user.AvatarFileName" alt="@user.AvatarFileName"
+                         class="rounded-circle me-3" style="width: 50px; height: 50px;"/>
+                                    <p>&#64;@user.UserName</p>
+                </a>
+            </li>
+        </ul>
+    }
+}

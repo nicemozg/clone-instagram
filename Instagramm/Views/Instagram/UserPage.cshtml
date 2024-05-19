@@ -1,0 +1,253 @@
+@using Instagramm.Enum
+@model Instagramm.ViewModels.UserViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <img src="/avatars/@Model.AvatarFileName" alt="@Model.AvatarFileName"
+                 class="img-fluid rounded-circle avatar-image">
+        </div>
+        <div class="col-md-6 d-flex align-items-center">
+            @{
+                @if (Model.Name != null)
+                {
+                    <div>
+                        <h2>&#64;@Model.UserName</h2>
+                        @if (Model.Gender == Gender.Man)
+                        {
+                            <h4>
+                                @Model.Name <i class="fas fa-male"></i>
+                            </h4>
+                        }
+                        else if (Model.Gender == Gender.Woman)
+                        {
+                            <h4>
+                                @Model.Name <i class="fas fa-female"></i>
+                            </h4>
+                        }
+                        else if (Model.Gender == Gender.Uncertainty)
+                        {
+                            <h4>
+                                @Model.Name <i class="fas fa-male"></i> <i class="fas fa-female"></i>
+                            </h4>
+                        }
+                        else
+                        {
+                            <h4>@Model.Name</h4>
+                        }
+                        <h5>@Model.Description</h5>
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        @if (Model.Gender == Gender.Man)
+                        {
+                            <h2>&#64;@Model.UserName <i class="fas fa-male"></i></h2>
+                        }
+                        else if (Model.Gender == Gender.Woman)
+                        {
+                            <h2>&#64;@Model.UserName <i class="fas fa-female"></i></h2>
+                        }
+                        else if (Model.Gender == Gender.Uncertainty)
+                        {
+                            <h2>&#64;@Model.UserName <i class="fas fa-male"></i> <i class="fas fa-female"></i></h2>
+                        }
+                        else
+                        {
+                            <h2>&#64;@Model.UserName</h2>
+                        }
+                        <h4>@Model.Description</h4>
+                    </div>
+                }
+
+            }
+
+            <ul class="list-unstyled ms-5">
+                <li>
+                    <strong>Публикации:</strong> @ViewBag.Posts.Count
+                </li>
+                <li id="followers">
+                    <strong>Подписчики:</strong> @ViewBag.Followers.Count
+                </li>
+                <li id="followeds">
+                    <strong>Подписки:</strong> @ViewBag.Followeds.Count
+                </li>
+            </ul>
+        </div>
+        @{
+            foreach (var role in ViewBag.Roles)
+            {
+                if (role == "admin")
+                {
+                    <div class="col-md-3 d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a asp-action="EditUserInfo" asp-route-id="@Model.Id" class="btn btn-add-post">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a asp-action="DeleteUserPage" asp-route-id="@Model.Id" class="btn btn-add-post">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                            @{
+                                if (ViewBag.Subscribe is not null)
+                                {
+                                    <div class="col-md-3">
+                                        <a onclick="subscribeUser('@Model.Id')" id="subscribeButton" class="btn btn-primary ms-3">Подписаться</a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-3">
+                                        <a onclick="subscribeUser('@Model.Id')" id="subscribeButton" class="btn btn-primary ms-3">Отписаться</a>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+                else if (role == "user")
+                {
+                    if (ViewBag.Subscribe is not null)
+                    {
+                        <div class="col-md-3">
+                            <a onclick="subscribeUser('@Model.Id')" id="subscribeButton" class="btn btn-primary ms-3">Подписаться</a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-3">
+                            <a onclick="subscribeUser('@Model.Id')" id="subscribeButton" class="btn btn-primary ms-3">Отписаться</a>
+                        </div>
+                    }
+                }
+            }
+        }
+
+        @{
+            foreach (var role in ViewBag.Roles)
+            {
+                if (role == "admin")
+                {
+                    <div class="row justify-content-center">
+                        <div class="col-md-3">
+                            <a class="btn btn-light btn-add-post m-auto" asp-action="AddPost" asp-route-id="@Model.Id">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+        }
+
+    </div>
+
+    <div class="row mt-4">
+        @foreach (var post in ViewBag.Posts)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card card-post">
+                    <a asp-action="AddComment" asp-route-id="@post.Id">
+                        <img src="/posts/@post.PostFileName" alt="@post.PostFileName" class="card-img-top card-img-post">
+                    </a>
+                    <div class="card-body">
+                        
+                            <button onclick="like(@post.Id)"  id="@post.Id" class="btn btn-outline-danger">
+                                <i class="fas fa-heart"></i> @post.LikesCount
+                                <span class="badge badge-primary"></span>
+                            </button>
+
+                            <a asp-action="AddComment" asp-route-id="@post.Id" class="btn btn-outline-secondary">
+                                <i class="fas fa-comment"></i> @post.CommentsCount
+                                <span class="badge badge-primary"></span>
+                            </a>
+
+                            @{
+                                foreach (var role in ViewBag.Roles)
+                                {
+                                    if (role == "admin")
+                                    {
+                                        <a asp-action="EditPost" asp-route-id="@post.Id" class="btn btn-outline-secondary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+
+                                        <a asp-action="DeletePost" asp-route-id="@post.Id" class="btn btn-outline-secondary">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    }
+                                }
+                            }
+                       
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+    function subscribeUser(userId) {
+        $.ajax({
+            url: '@Url.Action("Subscribe", "Instagram")',
+            type: 'POST',
+            data: {userId: userId},
+            dataType: 'json',
+            success: function (data) {
+                renderSubscribeButton(data);
+            },
+            error: function (data) {
+                if (data == null) {
+                    console.log('Что-то пошло не так');
+                }
+            }
+        });
+    }
+    
+    function like(postId){
+        $.ajax({
+        url: '@Url.Action("Like", "Instagram")',
+        type: 'POST',
+        data: {postId: postId},
+        dataType: 'json',
+        success: function (data) {
+        likeButton(data);
+        },
+        error: function (data) {
+        if (data == null) {
+        console.log('Что-то пошло не так');
+             }
+           }
+        })
+    }
+    
+    function renderSubscribeButton(data) {
+            console.log(data)
+            let button = $('#subscribeButton');
+            let followers = $('#followers')
+            let followeds = $('#followeds')
+            
+            if (data.subscribe) {
+                button.text('Отписаться');
+                followers.html(`<strong>Подписчики:</strong> ${data.follower}`)
+                followeds.html(`<strong>Подписки:</strong> ${data.followed}`)
+            } else {
+                button.text('Подписаться');
+                followers.html(`<strong>Подписчики:</strong> ${data.follower}`)
+                followeds.html(`<strong>Подписки:</strong> ${data.followed}`)
+            }
+        }
+        
+        function likeButton(data) {
+        console.log(data)
+        let likeButton = $(`#${data.postId}`)
+        likeButton.html(`<i class="fas fa-heart"></i> ${data.likesCount} <span class="badge badge-primary"></span>`)
+        }
+        
+    </script>
+}

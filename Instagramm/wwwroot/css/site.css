@@ -1,0 +1,73 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+a {
+  text-decoration: none;
+}
+
+.ava-insta {
+  max-height: 70px;
+}
+
+.avatar-image {
+  border-radius: 50%; /* Устанавливаем радиус границы в 50%, чтобы сделать кнопку круглой */
+  width: 210px; /* Задаем фиксированную ширину кнопки */
+  height: 280px; /* Задаем фиксированную высоту кнопки */
+  display: flex; /* Добавляем свойство flex, чтобы значок был выровнен по центру кнопки */
+  justify-content: center; /* Выравниваем содержимое по горизонтали */
+  align-items: center; /* Выравниваем содержимое по вертикали */
+  padding: 0; /* Убираем внутренние отступы */
+}
+
+.card-img-post {
+  width: 350px;
+  height: 350px;
+  object-fit: cover;
+}
+
+.card-post {
+  width: 350px;
+}
+
+.btn-add-post {
+  border-radius: 50%; /* Устанавливаем радиус границы в 50%, чтобы сделать кнопку круглой */
+  width: 40px; /* Задаем фиксированную ширину кнопки */
+  height: 40px; /* Задаем фиксированную высоту кнопки */
+  display: flex; /* Добавляем свойство flex, чтобы значок был выровнен по центру кнопки */
+  justify-content: center; /* Выравниваем содержимое по горизонтали */
+  align-items: center; /* Выравниваем содержимое по вертикали */
+  padding: 0; /* Убираем внутренние отступы */
+}
+
+.input-container {
+  display: flex; /* Устанавливаем flex-контейнер */
+  justify-content: center;
+  align-items: center; /* Выравниваем элементы вертикально по центру */
+}
+
+/* Стили для поля ввода */
+#inputField {
+  flex: 1; /* Поле ввода занимает доступное пространство в контейнере */
+  margin-right: 10px;
+  max-width: 250px;
+}

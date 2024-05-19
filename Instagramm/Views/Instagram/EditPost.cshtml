@@ -1,0 +1,82 @@
+@model Instagramm.ViewModels.PostViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card" style="max-width: 640px;">
+                <img src="/posts/@Model.PostFileName" alt="Фото поста" class="card-img-top" style="width: 100%;"/>
+                <div class="card-body">
+                    <p class="card-text">
+                        <strong>&#64;@Model.UserName</strong>
+                    </p>
+                    <p class="card-text">@Model.DescriptionForPost</p>
+                    <div class="row">
+
+                        @{
+                            if (Model.LikesCount == 1)
+                            {
+                                <div class="col">
+                                    <p class="text-danger">
+                                        <i class="fas fa-heart"></i> @Model.LikesCount Like
+                                    </p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col">
+                                    <p class="text-danger">
+                                        <i class="fas fa-heart"></i> @Model.LikesCount Likes
+                                    </p>
+                                </div>
+                            }
+                            if (Model.CommentsCount == 1)
+                            {
+                                <div class="col">
+                                    <p>
+                                        <i class="fas fa-comment"></i> @Model.CommentsCount Comment
+                                    </p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col">
+                                    <p>
+                                        <i class="fas fa-comment"></i> @Model.CommentsCount Comments
+                                    </p>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <p>
+                <strong>Введите описание для поста</strong>
+            </p>
+            <form method="post" asp-action="EditPost" asp-controller="Instagram">
+                <input type="hidden" asp-for="@Model.Id"/>
+                <div class="form-group">
+                    <textarea asp-for="DescriptionForPost"
+                    class="form-control" rows="4" 
+                    placeholder="Введите описание для поста">@Model.DescriptionForPost</textarea>
+                </div>
+                <button class="btn btn-outline-success mt-2">
+                    <i class="fas fa-save"></i>
+                </button>
+                <a class="btn btn-outline-secondary mt-2" asp-action="MyPage">
+                    <i class="fas fa-home"></i>
+                </a>
+            </form>
+
+        </div>
+    </div>
+</div>

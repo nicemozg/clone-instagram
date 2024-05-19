@@ -1,0 +1,90 @@
+@model List<Instagramm.ViewModels.PostViewModel>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<form asp-action="FindUser" asp-controller="Instagram" method="post">
+    <div class="input-container">
+        <input type="text" id="inputField" name="userInfo" class="form-control" placeholder="Введите текст">
+        <button type="submit" class="btn">Поиск</button>
+    </div>
+</form>
+
+<div class="row mt-4">
+    @foreach (var post in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card card-post">
+                <a asp-action="AddComment" asp-route-id="@post.Id">
+                    <img src="/posts/@post.PostFileName" alt="@post.PostFileName" class="card-img-top card-img-post">
+                </a>
+                <div class="card-body">
+                        <a asp-action="UserPage" asp-route-id="@post.UserId">
+                            <img src="/avatars/@post.AvatarFileName" alt="@post.AvatarFileName"
+                                 class="rounded-circle me-3" style="width: 50px; height: 50px;">
+                            &#64;@post.UserName
+                        </a>
+
+                        <button onclick="like(@post.Id)" id="@post.Id" class="btn btn-outline-danger">
+                            <i class="fas fa-heart"></i> @post.LikesCount
+                            <span class="badge badge-primary"></span>
+                        </button>
+
+                        <a asp-action="AddComment" asp-route-id="@post.Id" class="btn btn-outline-secondary">
+                            <i class="fas fa-comment"></i> @post.CommentsCount
+                            <span class="badge badge-primary"></span>
+                        </a>
+
+                        @{
+                            foreach (var role in ViewBag.Roles)
+                            {
+                                if (role == "admin")
+                                {
+                                    <a asp-action="EditPost" asp-route-id="@post.Id" class="btn btn-outline-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <a asp-action="DeletePost" asp-route-id="@post.Id" class="btn btn-outline-secondary">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                }
+                            }
+                        }
+                   
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts
+{
+    <script>
+    
+    function like(postId){
+            $.ajax({
+            url: '@Url.Action("Like", "Instagram")',
+            type: 'POST',
+            data: {postId: postId},
+            dataType: 'json',
+            success: function (data) {
+            likeButton(data);
+            },
+            error: function (data) {
+            if (data == null) {
+            console.log('Что-то пошло не так');
+                 }
+               }
+            })
+        }
+    
+    function likeButton(data) {
+            console.log(data)
+            let likeButton = $(`#${data.postId}`)
+            likeButton.html(`<i class="fas fa-heart"></i> ${data.likesCount} <span class="badge badge-primary"></span>`)
+            }
+    
+    </script>
+}

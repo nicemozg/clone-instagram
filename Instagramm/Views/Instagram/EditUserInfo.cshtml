@@ -1,0 +1,68 @@
+@model Instagramm.ViewModels.UserViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+@{
+    if (ViewBag.Error is not null)
+    {
+        <h3 class="text-danger">@ViewBag.Error</h3>
+    }
+    else
+    {
+        <h2>Редактирование анкеты</h2>
+    }
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <img src="/avatars/@Model.AvatarFileName" alt="@Model.AvatarFileName"
+                 class="img-fluid rounded-circle avatar-image">
+        </div>
+        
+        <form method="post" asp-action="EditUserInfo" asp-controller="Instagram" enctype="multipart/form-data">
+            
+            <input asp-for="Id" value="@Model.Id" type="hidden"/>
+            <div class="form-group">
+                <label for="name">Имя:</label>
+                <input asp-for="Name" type="text" class="form-control" id="name" name="Name" value="@Model.Name">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Описание:</label>
+                <textarea class="form-control" id="description" name="Description" rows="4">@Model.Description</textarea>
+            </div>
+            <div class="form-group">
+                <label>Пол:</label><br>
+                <div class="form-check">
+                    <input asp-for="GenderInfo" type="radio" class="form-check-input" id="genderMale" name="GenderInfo" value="Male">
+                    <label class="form-check-label" for="genderMale">Мужской</label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="GenderInfo" type="radio" class="form-check-input" id="genderFemale" name="GenderInfo" value="Female">
+                    <label class="form-check-label" for="genderFemale">Женский</label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="GenderInfo" type="radio" class="form-check-input" id="genderUncertainty" name="GenderInfo" value="Uncertainty">
+                    <label class="form-check-label" for="genderFemale">Не определенный</label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="GenderInfo" type="radio" class="form-check-input" id="genderNone" name="GenderInfo" value="None">
+                    <label class="form-check-label" for="genderNone">Не указывать</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="photo">Загрузить новое фото:</label>
+                <input asp-for="AvatarFile" type="file" class="form-control-file" id="photo" name="AvatarFile">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+    </div>
+</div>
+
+

@@ -1,0 +1,64 @@
+@model Instagramm.ViewModels.DeletePostViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card" style="max-width: 640px;">
+                <img src="/posts/@Model.PostFileName" alt="Фото поста" class="card-img-top" style="width: 100%;"/>
+                <div class="card-body">
+                    <p class="card-text">Описание - @Model.DescriptionForPost</p>
+                    <div class="row">
+                        @{
+                            if (Model.LikesCount == 1)
+                            {
+                                <div class="col">
+                                    <p class="text-danger">
+                                        <i class="fas fa-heart"></i> @Model.LikesCount Like
+                                    </p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col">
+                                    <p class="text-danger">
+                                        <i class="fas fa-heart"></i> @Model.LikesCount Likes
+                                    </p>
+                                </div>
+                            }
+                            if (Model.CommentsCount == 1)
+                            {
+                                <div class="col">
+                                    <p>
+                                        <i class="fas fa-comment"></i> @Model.CommentsCount Comment
+                                    </p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col">
+                                    <p>
+                                        <i class="fas fa-comment"></i> @Model.CommentsCount Comments
+                                    </p>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <h2>Подтверждение удаления</h2>
+
+            <form method="post" asp-action="Delete" asp-controller="Instagram" asp-route-id="@Model.PostId">
+                <p>Вы действительно хотите удалить пост</p>
+                <input type="submit" value="Да" class="btn btn-danger">
+                <a asp-action="MyPage" asp-controller="Instagram" class="btn btn-success">Нет</a>
+            </form>
+        </div>
+
+    </div>
+</div>
